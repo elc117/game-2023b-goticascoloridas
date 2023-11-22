@@ -3,84 +3,81 @@ package com.Jardim.game.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
-import java.util.Arrays;
-import java.util.List;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class QuestionScreen extends ScreenAdapter {
     private SpriteBatch batch;
     private Texture background;
     private Stage stage;
     private Game game;
-    private String questionText;
-    private Label questionLabel;
-    private TextButton[] answerButtons;
+    private Drawable answerButtonDrawable;
+    private Drawable answerButtonOverDrawable;
+    private Image[] answerButtons;
+    private Image question;
 
     public QuestionScreen(Game game, String questionText) {
         this.game = game;
-        this.questionText = questionText;
+    }
+
+    public QuestionScreen(Game game) {
+        this.game = game;
     }
 
     @Override
     public void show() {
+        Gdx.app.log("QuestionScreen", "show() called");
         batch = new SpriteBatch();
-        background = new Texture("background_question.jpg"); // Substitua pelo seu background de pergunta
+        background = new Texture("question2.jpeg");
         stage = new Stage();
 
-        // Configuração da label da pergunta
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        BitmapFont font = new BitmapFont(Gdx.files.internal("fonts/Gikany-Regular.fnt")); // Substitua pelo caminho correto do seu arquivo de fonte
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.BLACK; // Cor do texto
-        questionLabel = new Label(questionText, labelStyle);
-        questionLabel.setAlignment(com.badlogic.gdx.utils.Align.center);
+        // Configuração da imagem de pergunta
+        Drawable questionDrawable = new TextureRegionDrawable(new Texture("pergunta.png"));
 
-        // Configuração dos botões de alternativa
-        TextButtonStyle buttonStyle = new TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.BLACK; // Cor do texto
-        answerButtons = new TextButton[4];
-        List<String> alternativas = Arrays.asList("Alternativa 1", "Alternativa 2", "Alternativa 3", "Alternativa 4");
+        // Configuração da pergunta
+        question = new Image(questionDrawable);
+        question.setPosition(Gdx.graphics.getWidth() / 2 - question.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 
+        // Adiciona a pergunta ao palco
+        stage.addActor(question);
+
+        // Configuração da imagem do botão
+        answerButtonDrawable = new TextureRegionDrawable(new Texture("resposta.png"));
+        answerButtonOverDrawable = new TextureRegionDrawable(new Texture("resposta2.png"));
+
+        // Configuração do botão
+        answerButtons = new Image[4];
         for (int i = 0; i < 4; i++) {
-            answerButtons[i] = new TextButton(alternativas.get(i), buttonStyle);
-            final int answerIndex = i;
+            answerButtons[i] = new Image(answerButtonDrawable);
+            int row = i / 2; // 0 para os dois primeiros botões, 1 para os dois últimos
+            int col = i % 2; // 0 para os botões da esquerda, 1 para os da direita
+            answerButtons[i].setPosition(Gdx.graphics.getWidth() / 2 - answerButtons[i].getWidth() / 2 - 140 + col * (answerButtons[i].getWidth() + 10), question.getY() - (row + 1) * (answerButtons[i].getHeight() + 10));
+
+            // Adiciona um ouvinte de clique à imagem
             answerButtons[i].addListener(new ClickListener() {
                 @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    handleAnswerClicked(answerIndex);
+                public void enter(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
+                    ((Image) event.getTarget()).setDrawable(answerButtonOverDrawable);
+                }
+
+                @Override
+                public void exit(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor toActor) {
+                    ((Image) event.getTarget()).setDrawable(answerButtonDrawable);
                 }
             });
-        }
 
-        // Adiciona os elementos ao palco
-        Table table = new Table();
-        table.setFillParent(true);
-        table.center().top().padTop(100);
-        table.add(questionLabel).expandX().center().padBottom(30).row();
-        for (int i = 0; i < 4; i++) {
-            table.add(answerButtons[i]).expandX().center().padBottom(20).row();
+            // Adiciona as imagens ao palco
+            stage.addActor(answerButtons[i]);
         }
-        stage.addActor(table);
 
         // Configura o palco como o processador de entrada
         Gdx.input.setInputProcessor(stage);
-    }
-
-    private void handleAnswerClicked(int answerIndex) {
-        // Aqui você pode implementar a lógica de verificar se a resposta está correta
-        Gdx.app.log("Resposta", "Alternativa " + (answerIndex + 1) + " clicada");
     }
 
     @Override
