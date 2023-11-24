@@ -79,6 +79,13 @@ public class FadeScreen extends ScreenAdapter {
         shapeRenderer.dispose();
     }
 
+    public void setScreen(QuestionScreen questionScreen) {
+    }
+
+    public void setScreen(Screen nextScreen) {
+        this.nextScreen = nextScreen;
+    }
+
     public enum FadeType { IN, OUT }
 
     public static class FadeInfo {
