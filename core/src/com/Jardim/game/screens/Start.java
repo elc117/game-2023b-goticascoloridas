@@ -2,128 +2,85 @@ package com.Jardim.game.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Timer;
 
-public class Start extends ScreenAdapter {
+public class Start implements Screen {
     private SpriteBatch batch;
     private Texture background;
     private Stage stage;
     private Game game;
-    private Label questionLabel;
+    private
+    Image playButton;
     private Image title;
+    private Drawable playButtonDrawable;
+    private Drawable playButtonOverDrawable;
 
+    //método construtor
     public Start(Game game) {
         this.game = game;
     }
 
-    private void startScreenTransition() {
-        Gdx.app.log("Start", "startScreenTransition called");
-        QuestionScreen questionScreenInstance = new QuestionScreen(game);
-        FadeScreen.FadeInfo fadeOut = new FadeScreen.FadeInfo(FadeScreen.FadeType.OUT, Color.BLACK, Interpolation.smoother, 1f);
-        FadeScreen fadeScreen = new FadeScreen(game, fadeOut, this, questionScreenInstance, Interpolation.smoother, 1f);
-        game.setScreen(fadeScreen);
+    public Start() {
+
     }
 
+    //método que inicializa os elementos da tela
     @Override
     public void show() {
         batch = new SpriteBatch();
-        background = new Texture("start.jpeg");
+        background = new Texture("jardim.jpg");
         stage = new Stage();
+    }
 
-        // Configuração da label da pergunta
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = new BitmapFont(); // Use a fonte desejada
-        labelStyle.fontColor = Color.BLACK; // Cor do texto
-        questionLabel = new Label("", labelStyle);
-        questionLabel.setAlignment(Align.center);
-
-        // Adiciona os elementos à tabela
-        Table table = new Table();
-        table.setFillParent(true);
-        table.center().top().padTop(100);
-        table.add(questionLabel).expandX().center().padBottom(30).row();
-        stage.addActor(table);
-
-        Gdx.input.setInputProcessor(stage);
-
-        // Configuração da imagem do título
-        Drawable titleDrawable = new TextureRegionDrawable(new Texture("redirecionando.png"));
-
-        // Configuração do título
-        title = new Image(titleDrawable);
-        title.setPosition(Gdx.graphics.getWidth() / 2 - title.getWidth() / 2, Gdx.graphics.getHeight() / 2 - title.getHeight() / 2);
-
-        stage.addActor(title);
-
-        // Configura o palco como o processador de entrada
-        Gdx.input.setInputProcessor(stage);
-
-        // Inicia o temporizador
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                Gdx.app.log("Start", "Timer task 1 executed");
-                Timer.schedule(new Timer.Task() {
-                    @Override
-                    public void run() {
-                        Gdx.app.log("Start", "Timer task 2 executed");
-                        startScreenTransition();
-                    }
-                }, 3); // 3 segundos
-            }
-        }, 0); // Sem atraso inicial
+    private void showQuestion(String questionText) {
+        // Aqui você pode implementar a lógica de exibir a tela de pergunta
+        // Por exemplo:
+        // QuestionScreen questionScreen = new QuestionScreen(game, questionText);
+        // game.setScreen(questionScreen);
+        Gdx.app.log("Pergunta", questionText);
     }
 
     @Override
     public void render(float delta) {
+        // Este método é chamado continuamente para renderizar a tela
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        // Adicione aqui a lógica de renderização específica da tela Start
         batch.end();
-
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
+        // Este método é chamado quando a tela é redimensionada
     }
 
     @Override
     public void pause() {
+        // Este método é chamado quando o jogo é pausado
     }
 
     @Override
     public void resume() {
+        // Este método é chamado quando o jogo é retomado após estar pausado
     }
 
     @Override
     public void hide() {
-        Gdx.app.log("Start", "hide() called");
+        // Este método é chamado quando a tela não está mais visível
     }
 
     @Override
     public void dispose() {
-        Gdx.app.log("Start", "dispose() called");
-
+        // Este método é chamado quando a tela é destruída
         batch.dispose();
         background.dispose();
-        stage.dispose();
     }
 }
