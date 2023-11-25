@@ -7,80 +7,181 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
-import java.util.Arrays;
-import java.util.List;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Timer;
 
 public class QuestionScreen extends ScreenAdapter {
     private SpriteBatch batch;
     private Texture background;
     private Stage stage;
     private Game game;
-    private String questionText;
+    private Drawable answerButtonDrawable;
+    private Drawable answerButtonOverDrawable;
+    private Drawable correctAnswerDrawable;
+    private Drawable wrongAnswerDrawable;
+    private Image[] answerButtons;
+    private Image question;
+    private BitmapFont font;
     private Label questionLabel;
-    private TextButton[] answerButtons;
+    private Label[] answerLabels;
+    private FadeScreen fadeScreen;
+    private String[] questions = {"Em que ano foi fundado o jardim botânico?", "Quantos hectares o Jardim Botânico possui?", "Quantas plantas o Jardim Botânico possui?"};
+    private String[][] answers = {
+            {"1981", "2002", "1900", "1980"}, // Respostas para a primeira pergunta
+            {"13", "12", "1", "50"},
+            {"2.500", "100", "3.000", "50.000"}// Respostas para a segunda pergunta
+    };
 
-    public QuestionScreen(Game game, String questionText) {
+    private int currentQuestionIndex = 0;
+    private int correctAnswers = 0;
+    private TelaFinal finalScreenInstance;
+
+    public QuestionScreen(Game game) {
         this.game = game;
-        this.questionText = questionText;
+    }
+
+    private void finalScreenTransition() {
+        finalScreenInstance = new TelaFinal(game, correctAnswers);
+        FadeScreen.FadeInfo fadeOut = new FadeScreen.FadeInfo(FadeScreen.FadeType.OUT, Color.BLACK, Interpolation.smoother, 1f);
+        FadeScreen fadeScreen = new FadeScreen(game, fadeOut, this, finalScreenInstance, Interpolation.smoother, 1f);
+        game.setScreen(finalScreenInstance);
     }
 
     @Override
     public void show() {
+        Gdx.app.log("QuestionScreen", "show() called");
         batch = new SpriteBatch();
-        background = new Texture("background_question.jpg"); // Substitua pelo seu background de pergunta
+        background = new Texture("question2.jpeg");
         stage = new Stage();
 
-        // Configuração da label da pergunta
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        BitmapFont font = new BitmapFont(Gdx.files.internal("fonts/Gikany-Regular.fnt")); // Substitua pelo caminho correto do seu arquivo de fonte
+        // Configuração da imagem de pergunta
+        Drawable questionDrawable = new TextureRegionDrawable(new Texture("pergunta.png"));
+
+        // Configuração da pergunta
+        question = new Image(questionDrawable);
+        question.setPosition(Gdx.graphics.getWidth() / 2 - question.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+
+        // Adiciona a pergunta ao palco
+        stage.addActor(question);
+
+        // Configuração da imagem do botão
+        answerButtonDrawable = new TextureRegionDrawable(new Texture("resposta.png"));
+        answerButtonOverDrawable = new TextureRegionDrawable(new Texture("resposta2.png"));
+        correctAnswerDrawable = new TextureRegionDrawable(new Texture("verificar.png"));
+        wrongAnswerDrawable = new TextureRegionDrawable(new Texture("errado.png"));
+
+        // Configuração da fonte
+        font = new BitmapFont();
+
+        // Configuração do estilo do rótulo
+        LabelStyle labelStyle = new LabelStyle();
         labelStyle.font = font;
-        labelStyle.fontColor = Color.BLACK; // Cor do texto
-        questionLabel = new Label(questionText, labelStyle);
-        questionLabel.setAlignment(com.badlogic.gdx.utils.Align.center);
+        labelStyle.fontColor = Color.BLACK;
 
-        // Configuração dos botões de alternativa
-        TextButtonStyle buttonStyle = new TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.BLACK; // Cor do texto
-        answerButtons = new TextButton[4];
-        List<String> alternativas = Arrays.asList("Alternativa 1", "Alternativa 2", "Alternativa 3", "Alternativa 4");
+        // Configuração do rótulo da pergunta
+        questionLabel = new Label("Em que ano foi fundado o jardim botânico?", labelStyle);
+        questionLabel.setPosition(question.getX() + question.getWidth() / 2 - questionLabel.getWidth() / 2, question.getY() + question.getHeight() / 2 - questionLabel.getHeight() / 2);
 
+        // Adiciona o rótulo da pergunta ao palco
+        stage.addActor(questionLabel);
+
+        // Configuração dos botões de resposta
+        final Image correctAnswerImage = new Image(correctAnswerDrawable);
+        correctAnswerImage.setVisible(false); // Inicialmente, a imagem está oculta
+
+        answerButtons = new Image[4];
         for (int i = 0; i < 4; i++) {
-            answerButtons[i] = new TextButton(alternativas.get(i), buttonStyle);
-            final int answerIndex = i;
+            final int answerIndex = i; // Necessário para acessar i dentro do ClickListener
+            answerButtons[i] = new Image(answerButtonDrawable);
+            int row = i / 2; // 0 para os dois primeiros botões, 1 para os dois últimos
+            int col = i % 2; // 0 para os botões da esquerda, 1 para os da direita
+            answerButtons[i].setPosition(Gdx.graphics.getWidth() / 2 - answerButtons[i].getWidth() / 2 - 140 + col * (answerButtons[i].getWidth() + 10), question.getY() - (row + 1) * (answerButtons[i].getHeight() + 10));
+
+            // Adiciona um ouvinte de clique à imagem
             answerButtons[i].addListener(new ClickListener() {
+                Image wrongAnswerImage = new Image(wrongAnswerDrawable);
+
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    handleAnswerClicked(answerIndex);
+                    if (answerIndex == 0) { // Se a resposta estiver correta
+                        correctAnswers++;
+                        correctAnswerImage.setPosition(answerButtons[answerIndex].getX() + answerButtons[answerIndex].getWidth()/2 - correctAnswerImage.getWidth()/2,
+                                answerButtons[answerIndex].getY() + answerButtons[answerIndex].getHeight()/2 - correctAnswerImage.getHeight()/2);
+                        correctAnswerImage.setVisible(true);
+                    } else { // Se a resposta estiver errada
+                        Image wrongAnswerImage = new Image(wrongAnswerDrawable);
+                        wrongAnswerImage.setPosition(answerButtons[answerIndex].getX() + answerButtons[answerIndex].getWidth()/2 - wrongAnswerImage.getWidth()/2,
+                                answerButtons[answerIndex].getY() + answerButtons[answerIndex].getHeight()/2 - wrongAnswerImage.getHeight()/2);
+                        wrongAnswerImage.setVisible(true);
+                        stage.addActor(wrongAnswerImage);
+                    }
+                    if (currentQuestionIndex < questions.length) {
+                        // ...
+                    } else {
+                        // Fim do jogo ou transição para outra tela
+                        game.setScreen(new TelaFinal(game, correctAnswers));
+                    }
+                    Timer.schedule(new Timer.Task(){
+                        @Override
+                        public void run() {
+                            // Atualize para a próxima pergunta
+                            currentQuestionIndex++;
+                            if (currentQuestionIndex < questions.length) {
+                                questionLabel.setText(questions[currentQuestionIndex]);
+                                for (int j = 0; j < 4; j++) {
+                                    answerLabels[j].setText(answers[currentQuestionIndex][j]);
+                                }
+                            } else {
+                                // Fim do jogo ou transição para outra tela
+                                finalScreenTransition();
+                            }
+
+                            // Faça os ícones desaparecerem
+                            correctAnswerImage.setVisible(false);
+                            wrongAnswerImage.setVisible(false);
+                        }
+                    }, 1); // Atraso de um segundo
+
+                }
+
+                @Override
+                public void enter(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor fromActor) {
+                    ((Image) event.getTarget()).setDrawable(answerButtonOverDrawable);
+                }
+
+                @Override
+                public void exit(InputEvent event, float x, float y, int pointer, com.badlogic.gdx.scenes.scene2d.Actor toActor) {
+                    ((Image) event.getTarget()).setDrawable(answerButtonDrawable);
                 }
             });
+
+            // Adiciona as imagens ao palco
+            stage.addActor(answerButtons[i]);
         }
 
-        // Adiciona os elementos ao palco
-        Table table = new Table();
-        table.setFillParent(true);
-        table.center().top().padTop(100);
-        table.add(questionLabel).expandX().center().padBottom(30).row();
+        // Configuração dos rótulos das respostas
+        answerLabels = new Label[4];
         for (int i = 0; i < 4; i++) {
-            table.add(answerButtons[i]).expandX().center().padBottom(20).row();
+            answerLabels[i] = new Label(answers[currentQuestionIndex][i], labelStyle);
+            answerLabels[i].setPosition(answerButtons[i].getX() + answerButtons[i].getWidth() / 2 - answerLabels[i].getWidth() / 2, answerButtons[i].getY() + answerButtons[i].getHeight() / 2 - answerLabels[i].getHeight() / 2);
+
+            // Adiciona os rótulos das respostas ao palco
+            stage.addActor(answerLabels[i]);
         }
-        stage.addActor(table);
+
+        // Adicione a imagem ao palco aqui para que ela seja desenhada por cima dos outros atores
+        stage.addActor(correctAnswerImage);
 
         // Configura o palco como o processador de entrada
         Gdx.input.setInputProcessor(stage);
-    }
-
-    private void handleAnswerClicked(int answerIndex) {
-        // Aqui você pode implementar a lógica de verificar se a resposta está correta
-        Gdx.app.log("Resposta", "Alternativa " + (answerIndex + 1) + " clicada");
     }
 
     @Override
@@ -103,5 +204,6 @@ public class QuestionScreen extends ScreenAdapter {
         batch.dispose();
         background.dispose();
         stage.dispose();
+        font.dispose();
     }
 }
