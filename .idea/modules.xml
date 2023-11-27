@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/game-2023b-goticascoloridas.iml" filepath="$PROJECT_DIR$/.idea/modules/game-2023b-goticascoloridas.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/game-2023b-goticascoloridas.core.iml" filepath="$PROJECT_DIR$/.idea/modules/core/game-2023b-goticascoloridas.core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/desktop/game-2023b-goticascoloridas.desktop.iml" filepath="$PROJECT_DIR$/.idea/modules/desktop/game-2023b-goticascoloridas.desktop.iml" />
     </modules>
   </component>
 </project>

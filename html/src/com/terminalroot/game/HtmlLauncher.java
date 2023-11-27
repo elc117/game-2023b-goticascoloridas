@@ -1,9 +1,9 @@
-package com.terminalroot.game.client;
+package com.terminalroot.game;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.Jardim.game.screens.Jardim;
+import com.Jardim.game.Jardim;
 
 public class HtmlLauncher extends GwtApplication {
 

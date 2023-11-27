@@ -1,7 +1,5 @@
 package com.Jardim.game;
 
-import com.Jardim.game.screens.Jardim;
-
 public class JardimGame {
 
     public void create(){

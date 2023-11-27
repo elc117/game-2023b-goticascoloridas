@@ -35,9 +35,15 @@ public class QuestionScreen extends ScreenAdapter {
     private FadeScreen fadeScreen;
     private String[] questions = {"Em que ano foi fundado o jardim botânico?", "Quantos hectares o Jardim Botânico possui?", "Quantas plantas o Jardim Botânico possui?"};
     private String[][] answers = {
+<<<<<<< Updated upstream
             {"1981", "2002", "1900", "1980"}, // Respostas para a primeira pergunta
             {"13", "12", "1", "50"},
             {"2.500", "100", "3.000", "50.000"}// Respostas para a segunda pergunta
+=======
+            {"1981", "2002", "1900", "1980"},
+            {"13", "12", "1", "50"},
+            {"2.500", "100", "3.000", "50.000"}
+>>>>>>> Stashed changes
     };
 
     private int currentQuestionIndex = 0;
@@ -57,7 +63,6 @@ public class QuestionScreen extends ScreenAdapter {
 
     @Override
     public void show() {
-        Gdx.app.log("QuestionScreen", "show() called");
         batch = new SpriteBatch();
         background = new Texture("question2.jpeg");
         stage = new Stage();
@@ -117,11 +122,9 @@ public class QuestionScreen extends ScreenAdapter {
                                 answerButtons[answerIndex].getY() + answerButtons[answerIndex].getHeight()/2 - correctAnswerImage.getHeight()/2);
                         correctAnswerImage.setVisible(true);
                     } else { // Se a resposta estiver errada
-                        Image wrongAnswerImage = new Image(wrongAnswerDrawable);
                         wrongAnswerImage.setPosition(answerButtons[answerIndex].getX() + answerButtons[answerIndex].getWidth()/2 - wrongAnswerImage.getWidth()/2,
                                 answerButtons[answerIndex].getY() + answerButtons[answerIndex].getHeight()/2 - wrongAnswerImage.getHeight()/2);
                         wrongAnswerImage.setVisible(true);
-                        stage.addActor(wrongAnswerImage);
                     }
                     if (currentQuestionIndex < questions.length) {
                         // ...

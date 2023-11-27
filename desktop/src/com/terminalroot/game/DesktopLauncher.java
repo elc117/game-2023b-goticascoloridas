@@ -1,6 +1,6 @@
 package com.terminalroot.game;
 
-import com.Jardim.game.screens.Jardim;
+import com.Jardim.game.Jardim;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;

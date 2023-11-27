@@ -1,5 +1,7 @@
-package com.Jardim.game.screens;
+package com.Jardim.game;
 
+import com.Jardim.game.screens.FadeScreen;
+import com.Jardim.game.screens.Start;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -104,7 +106,6 @@ public class Jardim implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.app.log("Jardim", "render() called");
         ScreenUtils.clear(1, 0, 0, 1);
 
         batch.begin();
