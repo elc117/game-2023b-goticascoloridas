@@ -5,14 +5,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class TelaFinal extends ScreenAdapter {
     private SpriteBatch batch;
     private Texture background;
-    private Texture fimTexture; // Adicione esta linha
-    private Texture resultadoTexture; // Adicione esta linha
+    private Texture fimTexture;
+    private Texture resultadoTexture;
     private Stage stage;
     private Game game;
     private BitmapFont font;
@@ -27,27 +28,31 @@ public class TelaFinal extends ScreenAdapter {
     }
 
     public void show(){
-        Gdx.app.log("TelaFinal", "show() called");
         batch = new SpriteBatch();
         background = new Texture("final.jpeg");
         fimTexture = new Texture("fim.png");
         resultadoTexture = new Texture("resultado.png");
-        font = new BitmapFont(); // Inicialize a fonte aqui
+        font = new BitmapFont();
         stage = new Stage();
     }
-
 
     @Override
     public void render(float delta) {
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        batch.draw(resultadoTexture, Gdx.graphics.getWidth() / 2 - resultadoTexture.getWidth() / 2, Gdx.graphics.getHeight() / 2 - resultadoTexture.getHeight() / 2);
+        float resultadoX = Gdx.graphics.getWidth() / 2 - resultadoTexture.getWidth() / 2;
+        float resultadoY = Gdx.graphics.getHeight() / 2 - resultadoTexture.getHeight() / 2;
+        batch.draw(resultadoTexture, resultadoX, resultadoY);
         batch.draw(fimTexture, Gdx.graphics.getWidth() / 2 - fimTexture.getWidth() / 2, Gdx.graphics.getHeight() / 2 + resultadoTexture.getHeight() / 2);
-        if (correctAnswers > 2) {
-            font.draw(batch, "Parabéns, você foi bem", Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+        String message;
+        if (correctAnswers >= 2) {
+            message = "Parabéns, você foi bem";
         } else {
-            font.draw(batch, "Sinto muito, você foi mal", Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+            message = "Sinto muito, você foi mal";
         }
+        GlyphLayout layout = new GlyphLayout(font, message);
+        float textWidth = layout.width;
+        font.draw(batch, message, resultadoX + resultadoTexture.getWidth() / 2 - textWidth / 2, resultadoY + resultadoTexture.getHeight() / 2);
         batch.end();
     }
 
@@ -57,8 +62,6 @@ public class TelaFinal extends ScreenAdapter {
         background.dispose();
         fimTexture.dispose();
         resultadoTexture.dispose();
-        font.dispose(); // Adicione esta linha
+        font.dispose();
     }
-
-
 }

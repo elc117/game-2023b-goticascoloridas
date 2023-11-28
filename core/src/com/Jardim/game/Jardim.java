@@ -48,7 +48,6 @@ public class Jardim implements Screen {
 
     @Override
     public void show() {
-        Gdx.app.log("Jardim", "show() called");
         batch = new SpriteBatch();
         background = new Texture("jardim.jpg");
         stage = new Stage();

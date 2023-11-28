@@ -1,7 +1,7 @@
 package com.Jardim.game.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,18 +32,11 @@ public class QuestionScreen extends ScreenAdapter {
     private BitmapFont font;
     private Label questionLabel;
     private Label[] answerLabels;
-    private FadeScreen fadeScreen;
     private String[] questions = {"Em que ano foi fundado o jardim botânico?", "Quantos hectares o Jardim Botânico possui?", "Quantas plantas o Jardim Botânico possui?"};
     private String[][] answers = {
-<<<<<<< Updated upstream
             {"1981", "2002", "1900", "1980"}, // Respostas para a primeira pergunta
             {"13", "12", "1", "50"},
             {"2.500", "100", "3.000", "50.000"}// Respostas para a segunda pergunta
-=======
-            {"1981", "2002", "1900", "1980"},
-            {"13", "12", "1", "50"},
-            {"2.500", "100", "3.000", "50.000"}
->>>>>>> Stashed changes
     };
 
     private int currentQuestionIndex = 0;
@@ -55,10 +48,10 @@ public class QuestionScreen extends ScreenAdapter {
     }
 
     private void finalScreenTransition() {
-        finalScreenInstance = new TelaFinal(game, correctAnswers);
+        TelaFinal finalScreenInstance = new TelaFinal(game, correctAnswers);
         FadeScreen.FadeInfo fadeOut = new FadeScreen.FadeInfo(FadeScreen.FadeType.OUT, Color.BLACK, Interpolation.smoother, 1f);
         FadeScreen fadeScreen = new FadeScreen(game, fadeOut, this, finalScreenInstance, Interpolation.smoother, 1f);
-        game.setScreen(finalScreenInstance);
+        game.setScreen(fadeScreen);
     }
 
     @Override
@@ -112,7 +105,7 @@ public class QuestionScreen extends ScreenAdapter {
 
             // Adiciona um ouvinte de clique à imagem
             answerButtons[i].addListener(new ClickListener() {
-                Image wrongAnswerImage = new Image(wrongAnswerDrawable);
+                final Image wrongAnswerImage = new Image(wrongAnswerDrawable); // Agora é final
 
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -125,16 +118,18 @@ public class QuestionScreen extends ScreenAdapter {
                         wrongAnswerImage.setPosition(answerButtons[answerIndex].getX() + answerButtons[answerIndex].getWidth()/2 - wrongAnswerImage.getWidth()/2,
                                 answerButtons[answerIndex].getY() + answerButtons[answerIndex].getHeight()/2 - wrongAnswerImage.getHeight()/2);
                         wrongAnswerImage.setVisible(true);
+                        stage.addActor(wrongAnswerImage);
                     }
                     if (currentQuestionIndex < questions.length) {
                         // ...
                     } else {
                         // Fim do jogo ou transição para outra tela
-                        game.setScreen(new TelaFinal(game, correctAnswers));
+                        // Removemos a chamada para finalScreenTransition() aqui
                     }
                     Timer.schedule(new Timer.Task(){
                         @Override
                         public void run() {
+                            wrongAnswerImage.setVisible(false);
                             // Atualize para a próxima pergunta
                             currentQuestionIndex++;
                             if (currentQuestionIndex < questions.length) {
@@ -144,7 +139,7 @@ public class QuestionScreen extends ScreenAdapter {
                                 }
                             } else {
                                 // Fim do jogo ou transição para outra tela
-                                finalScreenTransition();
+                                finalScreenTransition(); // Chamamos aqui quando todas as perguntas foram respondidas
                             }
 
                             // Faça os ícones desaparecerem
@@ -152,7 +147,13 @@ public class QuestionScreen extends ScreenAdapter {
                             wrongAnswerImage.setVisible(false);
                         }
                     }, 1); // Atraso de um segundo
-
+                    // Agende uma tarefa para fazer o ícone correto sumir após um segundo
+                    Timer.schedule(new Timer.Task(){
+                        @Override
+                        public void run() {
+                            correctAnswerImage.setVisible(false);
+                        }
+                    }, 1);
                 }
 
                 @Override

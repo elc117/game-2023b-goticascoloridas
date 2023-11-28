@@ -30,7 +30,6 @@ public class Start extends ScreenAdapter {
     }
 
     private void questionScreenTransition() {
-        Gdx.app.log("Start", "startScreenTransition called");
         QuestionScreen questionScreenInstance = new QuestionScreen(game);
         FadeScreen.FadeInfo fadeOut = new FadeScreen.FadeInfo(FadeScreen.FadeType.OUT, Color.BLACK, Interpolation.smoother, 1f);
         FadeScreen fadeScreen = new FadeScreen(game, fadeOut, this, questionScreenInstance, Interpolation.smoother, 1f);
@@ -75,11 +74,9 @@ public class Start extends ScreenAdapter {
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                Gdx.app.log("Start", "Timer task 1 executed");
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                        Gdx.app.log("Start", "Timer task 2 executed");
                         questionScreenTransition();
                     }
                 }, 2); // 2 segundos
@@ -115,13 +112,10 @@ public class Start extends ScreenAdapter {
 
     @Override
     public void hide() {
-        Gdx.app.log("Start", "hide() called");
     }
 
     @Override
     public void dispose() {
-        Gdx.app.log("Start", "dispose() called");
-
         batch.dispose();
         background.dispose();
         stage.dispose();

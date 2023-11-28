@@ -9,19 +9,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 public class MyLabel {
     private Label label;
 
-    public MyLabel(String text, float x, float y) {
-        // Cria uma nova fonte BitmapFont
+    public MyLabel(String text, float x, float y, int fontSize, Color fontColor) {
+        // Cria uma nova fonte BitmapFont com o tamanho especificado
         BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
+        font.getData().setScale(fontSize / font.getCapHeight()); // Ajusta o tamanho da fonte
 
-        // Cria um novo estilo de rótulo
+        // Cria um novo estilo de rótulo com a cor especificada
         LabelStyle style = new LabelStyle();
         style.font = font;
-        style.fontColor = Color.WHITE;
+        style.fontColor = fontColor;
 
-        // Cria um novo rótulo com o texto e estilo especificados
+        // Cria um novo rótulo com o texto, estilo e posição especificados
         label = new Label(text, style);
-
-        // Define a posição do rótulo
         label.setPosition(x, y);
     }
 
@@ -29,4 +28,3 @@ public class MyLabel {
         return label;
     }
 }
-
