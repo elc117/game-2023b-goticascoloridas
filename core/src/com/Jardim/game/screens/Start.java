@@ -3,6 +3,7 @@ package com.Jardim.game.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -38,13 +39,14 @@ public class Start extends ScreenAdapter {
 
     @Override
     public void show() {
+        
         batch = new SpriteBatch();
         background = new Texture("start.jpeg");
         stage = new Stage();
 
         // Configuração da label da pergunta
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = new BitmapFont(); // Use a fonte desejada
+        labelStyle.font = new BitmapFont(); 
         labelStyle.fontColor = Color.BLACK; // Cor do texto
         questionLabel = new Label("", labelStyle);
         questionLabel.setAlignment(Align.center);
@@ -57,6 +59,7 @@ public class Start extends ScreenAdapter {
         stage.addActor(table);
 
         Gdx.input.setInputProcessor(stage);
+
 
         // Configuração da imagem do título
         Drawable titleDrawable = new TextureRegionDrawable(new Texture("redirecionando.png"));

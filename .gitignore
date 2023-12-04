@@ -22,3 +22,8 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+desktop/bin/main/questions-background.jpeg
+desktop/build/resources/main/soundFinalBad.mp3
+desktop/build/resources/main/soundFinalGood.mp3
+html/bin/main/com/terminalroot/game/GdxDefinitionSuperdev.gwt.xml
+html/bin/main/com/terminalroot/game/GdxDefinition.gwt.xml

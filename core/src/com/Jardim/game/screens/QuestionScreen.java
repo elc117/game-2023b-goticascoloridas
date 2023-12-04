@@ -3,6 +3,7 @@ package com.Jardim.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -43,6 +44,15 @@ public class QuestionScreen extends ScreenAdapter {
     private int correctAnswers = 0;
     private TelaFinal finalScreenInstance;
 
+    public static Sound soundCorrect;
+    public static Sound soundWrong;
+    public static Sound soundGame;
+    public static Sound soundFinalGood;
+    public static Sound soundFinalBad;
+    public static Sound soundClickButton;
+
+    
+
     public QuestionScreen(Game game) {
         this.game = game;
     }
@@ -56,6 +66,12 @@ public class QuestionScreen extends ScreenAdapter {
 
     @Override
     public void show() {
+        // Configuração dos sons
+        soundCorrect = Gdx.audio.newSound(Gdx.files.internal("./assets/soundCorrect.mp3"));
+        soundWrong = Gdx.audio.newSound(Gdx.files.internal("./assets/soundWrong.mp3"));
+
+
+
         batch = new SpriteBatch();
         background = new Texture("question2.jpeg");
         stage = new Stage();
@@ -114,11 +130,14 @@ public class QuestionScreen extends ScreenAdapter {
                         correctAnswerImage.setPosition(answerButtons[answerIndex].getX() + answerButtons[answerIndex].getWidth()/2 - correctAnswerImage.getWidth()/2,
                                 answerButtons[answerIndex].getY() + answerButtons[answerIndex].getHeight()/2 - correctAnswerImage.getHeight()/2);
                         correctAnswerImage.setVisible(true);
+                        soundCorrect.play();
+
                     } else { // Se a resposta estiver errada
                         wrongAnswerImage.setPosition(answerButtons[answerIndex].getX() + answerButtons[answerIndex].getWidth()/2 - wrongAnswerImage.getWidth()/2,
                                 answerButtons[answerIndex].getY() + answerButtons[answerIndex].getHeight()/2 - wrongAnswerImage.getHeight()/2);
                         wrongAnswerImage.setVisible(true);
                         stage.addActor(wrongAnswerImage);
+                        soundWrong.play();
                     }
                     if (currentQuestionIndex < questions.length) {
                         // ...
@@ -169,6 +188,7 @@ public class QuestionScreen extends ScreenAdapter {
 
             // Adiciona as imagens ao palco
             stage.addActor(answerButtons[i]);
+
         }
 
         // Configuração dos rótulos das respostas

@@ -5,6 +5,8 @@ import com.Jardim.game.screens.Start;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -28,6 +30,9 @@ public class Jardim implements Screen {
     private Drawable playButtonDrawable;
     private Drawable playButtonOverDrawable;
     private Start startScreenInstance;
+    private Music backgroundMusic;
+    public Sound soundClickButton;
+
 
     // Construtor
     public Jardim(Game game) {
@@ -48,6 +53,7 @@ public class Jardim implements Screen {
 
     @Override
     public void show() {
+        
         batch = new SpriteBatch();
         background = new Texture("jardim.jpg");
         stage = new Stage();
@@ -61,6 +67,9 @@ public class Jardim implements Screen {
 
         // Configuração da imagem do botão quando passa o mouse
         playButtonOverDrawable = new TextureRegionDrawable(new Texture("play2.png"));
+
+        // Configuração do som do botão
+        soundClickButton = Gdx.audio.newSound(Gdx.files.internal("./assets/soundClickButton.mp3"));
 
         // Adiciona um ouvinte de clique à imagem
         playButton.addListener(new ClickListener() {
@@ -83,6 +92,7 @@ public class Jardim implements Screen {
             // Método que muda a tela para a tela de seleção de mapa quando o botão de play é clicado
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                soundClickButton.play();
                 startScreenTransition();
                 return true;
             }
@@ -101,6 +111,13 @@ public class Jardim implements Screen {
 
         // Configura o palco como o processador de entrada
         Gdx.input.setInputProcessor(stage);
+
+        // configura musica de fundo
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("./assets/backgroundMusic.mp3"));
+        backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(0.5f);
+        backgroundMusic.play();
+    
     }
 
     @Override
